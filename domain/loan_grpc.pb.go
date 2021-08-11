@@ -19,8 +19,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LoanClient interface {
 	// Sends a greeting
-	AddLoan(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
-	GetLoan(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	AddLoan(ctx context.Context, in *NewLoan, opts ...grpc.CallOption) (*NewLoan, error)
+	GetLoans(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*ItemResponse, error)
 }
 
 type loanClient struct {
@@ -31,8 +31,8 @@ func NewLoanClient(cc grpc.ClientConnInterface) LoanClient {
 	return &loanClient{cc}
 }
 
-func (c *loanClient) AddLoan(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
-	out := new(HelloReply)
+func (c *loanClient) AddLoan(ctx context.Context, in *NewLoan, opts ...grpc.CallOption) (*NewLoan, error) {
+	out := new(NewLoan)
 	err := c.cc.Invoke(ctx, "/domain.Loan/AddLoan", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -40,9 +40,9 @@ func (c *loanClient) AddLoan(ctx context.Context, in *HelloRequest, opts ...grpc
 	return out, nil
 }
 
-func (c *loanClient) GetLoan(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
-	out := new(HelloReply)
-	err := c.cc.Invoke(ctx, "/domain.Loan/GetLoan", in, out, opts...)
+func (c *loanClient) GetLoans(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*ItemResponse, error) {
+	out := new(ItemResponse)
+	err := c.cc.Invoke(ctx, "/domain.Loan/GetLoans", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -54,8 +54,8 @@ func (c *loanClient) GetLoan(ctx context.Context, in *HelloRequest, opts ...grpc
 // for forward compatibility
 type LoanServer interface {
 	// Sends a greeting
-	AddLoan(context.Context, *HelloRequest) (*HelloReply, error)
-	GetLoan(context.Context, *HelloRequest) (*HelloReply, error)
+	AddLoan(context.Context, *NewLoan) (*NewLoan, error)
+	GetLoans(context.Context, *HelloRequest) (*ItemResponse, error)
 	mustEmbedUnimplementedLoanServer()
 }
 
@@ -63,11 +63,11 @@ type LoanServer interface {
 type UnimplementedLoanServer struct {
 }
 
-func (UnimplementedLoanServer) AddLoan(context.Context, *HelloRequest) (*HelloReply, error) {
+func (UnimplementedLoanServer) AddLoan(context.Context, *NewLoan) (*NewLoan, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddLoan not implemented")
 }
-func (UnimplementedLoanServer) GetLoan(context.Context, *HelloRequest) (*HelloReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetLoan not implemented")
+func (UnimplementedLoanServer) GetLoans(context.Context, *HelloRequest) (*ItemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLoans not implemented")
 }
 func (UnimplementedLoanServer) mustEmbedUnimplementedLoanServer() {}
 
@@ -83,7 +83,7 @@ func RegisterLoanServer(s grpc.ServiceRegistrar, srv LoanServer) {
 }
 
 func _Loan_AddLoan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
+	in := new(NewLoan)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -95,25 +95,25 @@ func _Loan_AddLoan_Handler(srv interface{}, ctx context.Context, dec func(interf
 		FullMethod: "/domain.Loan/AddLoan",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LoanServer).AddLoan(ctx, req.(*HelloRequest))
+		return srv.(LoanServer).AddLoan(ctx, req.(*NewLoan))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Loan_GetLoan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Loan_GetLoans_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HelloRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LoanServer).GetLoan(ctx, in)
+		return srv.(LoanServer).GetLoans(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/domain.Loan/GetLoan",
+		FullMethod: "/domain.Loan/GetLoans",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LoanServer).GetLoan(ctx, req.(*HelloRequest))
+		return srv.(LoanServer).GetLoans(ctx, req.(*HelloRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -130,8 +130,8 @@ var Loan_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Loan_AddLoan_Handler,
 		},
 		{
-			MethodName: "GetLoan",
-			Handler:    _Loan_GetLoan_Handler,
+			MethodName: "GetLoans",
+			Handler:    _Loan_GetLoans_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -48,14 +48,31 @@ func NewServer() *server {
 	}
 }
 
-// SayHello implements helloworld.GreeterServer
-func (s *server) AddLoan(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+
+func (s *server) AddLoan(ctx context.Context, in *pb.NewLoan) (*pb.NewLoan, error) {
 	log.Printf("Received: %v", in.GetName())
-	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
+
+	loan := &pb.NewLoan{
+		Id:       in.GetId(),
+		Name:     in.GetName(),
+		Amount:   in.GetAmount(),
+		Duration: in.GetDuration(),
+	}
+
+	s.LoansDB[in.GetId()] = loan
+
+	return loan, nil
 }
 
-func (s *server) GetLoan(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	return &pb.HelloReply{Message: "Hello again from veron" + in.GetName()}, nil
+func (s *server) GetLoans(ctx context.Context, in *pb.HelloRequest) (*pb.ItemResponse, error) {
+
+	var loans pb.ItemResponse
+
+	for _, value := range s.LoansDB {
+		loans.Items = append(loans.Items, value)
+	}
+
+	return &loans, nil
 }
 
 func main() {

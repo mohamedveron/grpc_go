@@ -50,9 +50,16 @@ func main() {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.GetLoan(ctx, &pb.HelloRequest{Name: name})
+
+	r, err := c.AddLoan(ctx, &pb.NewLoan{Id: "zxc123",  Name: name})
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		log.Fatalf("could not add loan: %v", err)
 	}
-	log.Printf("Greeting: %s", r.GetMessage())
+	log.Printf("Loand added: %s", r.GetId())
+
+	loans, err := c.GetLoans(ctx, &pb.HelloRequest{Name: name})
+	if err != nil {
+		log.Fatalf("could not get loans: %v", err)
+	}
+	log.Printf("Loans: %s", loans.GetItems())
 }

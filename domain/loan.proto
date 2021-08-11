@@ -20,13 +20,17 @@ option go_package = "demo/domain";
 // The greeting service definition.
 service Loan {
   // Sends a greeting
-  rpc AddLoan (HelloRequest) returns (HelloReply) {}
-  rpc GetLoan (HelloRequest) returns (HelloReply) {}
+  rpc AddLoan (NewLoan) returns (NewLoan) {}
+  rpc GetLoans (HelloRequest) returns (ItemResponse) {}
 }
 
 // The request message containing the user's name.
 message HelloRequest {
   string name = 1;
+}
+
+message ItemResponse {
+  repeated NewLoan items = 1;
 }
 
 // The response message containing the greetings
